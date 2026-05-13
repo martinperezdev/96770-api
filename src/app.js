@@ -9,6 +9,7 @@ import { cacheControl } from './middlewares/cacheControl.js';
 import compression from 'compression';
 import { requestId } from './middlewares/requestId.js';
 import metricsRouter from './routes/metrics.router.js';
+import debugRouter from './routes/debug.router.js'
 
 const app = express();
 
@@ -31,6 +32,7 @@ app.use('/api/health', healthRouter);
 app.use('/api/products', productsRouter);
 app.use('/api/carts', cartsRouter);
 app.use('/metrics', metricsRouter);
+app.use('/api/debug', debugRouter);
 
 //Bloque 4 - middleware para errores
 app.use(errorHandler)
