@@ -44,4 +44,10 @@ if(!env.isProd){
 //Bloque 4 - middleware para errores
 app.use(errorHandler)
 
+// Test unitario -> prueba una funcion aislada -> successResponse
+// Test de integracion -> prueba varias partes juntas -> 1 - middlewares + controllers
+                                                      //2 - ruta + controller + response helpers
+// Test de enpoint -> prueba una ruta completa -> ej: GET /api/products
+// Test de performance -> 
+
 export default app;

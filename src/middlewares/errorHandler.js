@@ -1,8 +1,8 @@
-export function errorHandler(err, req, res, next){
-  const statusCode = err.statusCode || 500;
+import { errorResponse } from "../utils/apiResponse.js";
 
-  return res.status(statusCode).json({
-    status: 'error',
-    message: err.message || 'Internal server error'
+export function errorHandler(err, req, res, next){
+  return errorResponse(res, {
+    statusCode: err.statusCode,
+    message: err.message
   });
 };
