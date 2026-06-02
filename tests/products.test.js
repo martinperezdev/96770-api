@@ -1,5 +1,36 @@
 import request from 'supertest';
+import mongoose from 'mongoose';
+
 import app from '../src/app.js';
+import { ProductModel } from '../src/models/product.model.js';
+import { env } from '../src/config/env.js';
+
+beforeAll(async () => {
+  await mongoose.connect(env.mongoUriTest);
+});
+
+beforeEach(async () => {
+  await ProductModel.deleteMany({});
+
+  await ProductModel.insertMany([
+    {
+      title: 'Mouse gamer',
+      price: 100,
+      stock: 10,
+    },
+    {
+      title: 'Teclado mecanico',
+      price: 150,
+      stock: 20,
+    },
+  ]);
+});
+
+afterAll(async () => {
+  await ProductModel.deleteMany({});
+  await mongoose.connection.close();
+});
+
 
 describe('/api/products', () => {
 
@@ -8,32 +39,36 @@ describe('/api/products', () => {
 
     expect(response.statusCode).toBe(200);
     expect(response.body.status).toBe('success');
-    expect(response.body.message).toBe('Product List');
     expect(Array.isArray(response.body.payload)).toBe(true);
+    expect(response.body.payload.length).toBe(2);
   });
 
-  test('GET /api/products/p1 deberia devolver un producto existente', async () => {
-    const response = await request(app).get('/api/products/p1');
+  test('GET /api/products/:pid deberia devolver un producto existente', async () => {
+    const product = await ProductModel.findOne({ title: 'Mouse gamer' }).lean();
+
+    const response = await request(app).get(`/api/products/${product._id}`);
 
     expect(response.statusCode).toBe(200);
     expect(response.body.status).toBe('success');
     expect(response.body.payload).toBeDefined();
-    expect(response.body.payload.id).toBe('p1');
+    expect(response.body.payload._id).toBe(product._id.toString());
+    expect(response.body.payload.title).toBe('Mouse gamer');
   });
 
-  test('GET /api/products/p10 deberia devolver un error 404', async () => {
-    const response = await request(app).get('/api/products/p10');
+  test('GET /api/products/:pid deberia devolver un error 404', async () => {
+    const fakeId = new mongoose.Types.ObjectId();
+
+    const response = await request(app).get(`/api/products/${fakeId}`);
 
     expect(response.statusCode).toBe(404);
     expect(response.body.status).toBe('error');
-    expect(response.body.message).toBe('Product not found');
   });
 
   test('POST /api/products deberia crear un producto correctamente', async () => {
     const newProduct = {
-      title: "Teclado mecanico",
-      price: 150,
-      stock: 20
+      title: 'Monitor 24 pulgadas',
+      price: 300,
+      stock: 5,
     };
 
     const response = await request(app)
@@ -42,25 +77,33 @@ describe('/api/products', () => {
 
     expect(response.statusCode).toBe(201);
     expect(response.body.status).toBe('success');
-    expect(response.body.payload).toBeDefined();
-    expect(response.body.payload.title).toBe("Teclado mecanico");
+    expect(response.body.payload.title).toBe('Monitor 24 pulgadas');
   });
 
-  test('PUT /api/products/:pid deberia actualizar un producto existente', async() => {
-    const updatedProduct = { title: "Mouse actualizado" };
+  test('PUT /api/products/:pid deberia actualizar un producto existente', async () => {
+    const product = await ProductModel.findOne({ title: 'Mouse gamer' }).lean();
+
+    const updatedProduct = {
+      title: 'Mouse actualizado',
+      price: 200,
+      stock: 15,
+    };
 
     const response = await request(app)
-      .put('/api/products/p1')
-      .send(updatedProduct)
+      .put(`/api/products/${product._id}`)
+      .send(updatedProduct);
 
     expect(response.statusCode).toBe(200);
     expect(response.body.status).toBe('success');
-    expect(response.body.payload.title).toBe("Mouse actualizado");
+    expect(response.body.payload.title).toBe('Mouse actualizado');
+    expect(response.body.payload.price).toBe(200);
   });
 
-  test('DELETE /api/products/:pid deberia eliminar un producto existente', async() => {
-    const response = await request(app).delete('/api/products/p1');
+  test('DELETE /api/products/:pid deberia eliminar un producto existente', async () => {
+    const product = await ProductModel.findOne({ title: 'Mouse gamer' }).lean();
 
+    const response = await request(app).delete(`/api/products/${product._id}`);
+    
     expect(response.statusCode).toBe(200);
     expect(response.body.status).toBe('success');
   });

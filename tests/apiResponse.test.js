@@ -15,15 +15,27 @@ describe('apiResponse helpers', () => {
     const res = createMockResponse();
 
     successResponse(res, {
-      message: 'Product List',
-      payload: [ { id: 'p1', title: 'Mouse Gamer' } ]
+      message: 'Products retrieved successfully',
+      payload: [
+        {
+          title: "Monitor curvo",
+          price: 100,
+          stock: 8
+        }
+      ]
     });
 
     expect(res.status).toHaveBeenCalledWith(200);
     expect(res.json).toHaveBeenCalledWith({
       status: 'success',
-      message: 'Product List',
-      payload: [ { id: 'p1', title: 'Mouse Gamer' } ]
+      message: 'Products retrieved successfully',
+      payload: [
+        {
+          title: "Monitor curvo",
+          price: 100,
+          stock: 8
+        }
+      ]
     });
   });
 

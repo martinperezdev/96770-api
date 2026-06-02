@@ -1,5 +1,5 @@
 import { Router } from 'express';
-import { getProducts, getProductById, createProduct, updateProduct, deleteProduct } from '../controllers/products.controller.js';
+import { getProducts, getProduct, createNewProduct, updateProduct, deleteProduct } from '../controllers/products.controller.js';
 
 const router = Router();
 
@@ -50,7 +50,7 @@ router.get('/', getProducts);
  *            schema:
  *              $ref: '#/components/schemas/ErrorResponse'
  */
-router.get('/:pid', getProductById);
+router.get('/:pid', getProduct);
 /**
  * @swagger
  * /api/products:
@@ -79,7 +79,7 @@ router.get('/:pid', getProductById);
  *            schema:
  *              $ref: '#/components/schemas/ErrorResponse'
  */
-router.post('/', createProduct);
+router.post('/', createNewProduct);
 /**
  * @swagger
  * /api/products/{pid}:

@@ -1,7 +1,7 @@
 import { logger } from "../utils/logger.js";
 import { requestCounter, requestDuration } from "../utils/metrics.js";
 
-function getLogLevel(statusCode) {
+export function getLogLevel(statusCode) {
   if (statusCode >= 500) return 'error';
   if (statusCode >= 400) return 'warn';
   return 'info';

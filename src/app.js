@@ -1,7 +1,6 @@
 import express from 'express';
 import healthRouter from './routes/health.router.js';
 import productsRouter from './routes/products.router.js';
-import cartsRouter from './routes/carts.router.js';
 import { env } from './config/env.js';
 import { errorHandler } from './middlewares/errorHandler.js';
 import { requestLogger } from './middlewares/requestLogger.js';
@@ -11,6 +10,7 @@ import { requestId } from './middlewares/requestId.js';
 import metricsRouter from './routes/metrics.router.js';
 import debugRouter from './routes/debug.router.js';
 import docsRouter from './routes/docs.router.js';
+import authRouter from './routes/auth.router.js';
 
 const app = express();
 
@@ -31,11 +31,9 @@ app.use((req, res, next)=> {
 //Bloque 3 - endpoints
 app.use('/api/health', healthRouter);
 app.use('/api/products', productsRouter);
-
-// GET /api/products/:pid 
-
-app.use('/api/carts', cartsRouter);
+app.use('/api/auth', authRouter);
 app.use('/api/metrics', metricsRouter);
+
 if(!env.isProd){
   app.use('/api/debug', debugRouter);
   app.use('/api/docs', docsRouter);
