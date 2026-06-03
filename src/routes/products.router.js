@@ -1,5 +1,6 @@
 import { Router } from 'express';
 import { getProducts, getProduct, createNewProduct, updateProduct, deleteProduct } from '../controllers/products.controller.js';
+import { authenticate, authorizeAdmin } from '../middlewares/auth.middleware.js';
 
 const router = Router();
 
@@ -59,6 +60,8 @@ router.get('/:pid', getProduct);
  *    description: Crear un producto
  *    tags:
  *      - Products
+ *    security:
+ *      - bearerAuth: []
  *    requestBody:
  *      required: true
  *      content:
@@ -78,8 +81,20 @@ router.get('/:pid', getProduct);
  *          application/json:
  *            schema:
  *              $ref: '#/components/schemas/ErrorResponse'
+ *      401:
+ *        description: Token is required
+ *        content:
+ *          application/json:
+ *            schema:
+ *              $ref: '#/components/schemas/ErrorResponse'
+ *      403:
+ *        description: Forbidden
+ *        content:
+ *          application/json:
+ *            schema:
+ *              $ref: '#/components/schemas/ErrorResponse'
  */
-router.post('/', createNewProduct);
+router.post('/', authenticate, authorizeAdmin, createNewProduct);
 /**
  * @swagger
  * /api/products/{pid}:
@@ -88,6 +103,8 @@ router.post('/', createNewProduct);
  *     description: Actualiza un producto existente a partir de su ID.
  *     tags:
  *       - Products
+ *     security:
+ *       - bearerAuth: []
  *     parameters:
  *       - in: path
  *         name: pid
@@ -115,8 +132,20 @@ router.post('/', createNewProduct);
  *           application/json:
  *             schema:
  *               $ref: '#/components/schemas/ErrorResponse'
+ *       401:
+ *         description: Token is required
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/ErrorResponse'
+ *       403:
+ *         description: Forbidden
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/ErrorResponse'
  */
-router.put('/:pid', updateProduct);
+router.put('/:pid', authenticate, authorizeAdmin, updateProduct);
 /**
  * @swagger
  * /api/products/{pid}:
@@ -125,6 +154,8 @@ router.put('/:pid', updateProduct);
  *     description: Elimina un producto existente a partir de su ID.
  *     tags:
  *       - Products
+ *     security:
+ *       - bearerAuth: []
  *     parameters:
  *       - in: path
  *         name: pid
@@ -142,7 +173,19 @@ router.put('/:pid', updateProduct);
  *           application/json:
  *             schema:
  *               $ref: '#/components/schemas/ErrorResponse'
+ *       401:
+ *         description: Token is required
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/ErrorResponse'
+ *       403:
+ *         description: Forbidden
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/ErrorResponse'
  */
-router.delete('/:pid', deleteProduct);
+router.delete('/:pid', authenticate, authorizeAdmin, deleteProduct);
 
 export default router;
